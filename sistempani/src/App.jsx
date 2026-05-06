@@ -91,11 +91,15 @@ const DashboardEmpresarial = () => {
 
   // ABA 1: OPERAÇÃO (Chão de Fábrica)
   const renderOperacao = () => (
+    
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 animate-fade-in">
       <h2 className="text-lg font-bold mb-4 border-b pb-2 flex justify-between items-center">
         <span>PARÂMETROS DE BATIDA</span>
         {resultadoCalculo && <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Último: {resultadoCalculo.timestamp}</span>}
       </h2>
+      <div style={{ backgroundColor: 'red', minHeight: '100vh' }}>
+  {/* Conteúdo do seu sistema */}
+</div>
       
       <div className="space-y-6">
         <div>
