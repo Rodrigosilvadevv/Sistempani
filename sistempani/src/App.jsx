@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 /**
- * PANIDASH PRO - MÓDULO INDUSTRIAL V3.0
+ * PANIDASH PRO - MÓDULO INDUSTRIAL V3.1
  * Desenvolvido para: Rodrigo (ADS Curitiba)
- * Foco: Fermentação Térmica, Estoque Inteligente e Tarefas Alternadas
+ * Foco: Fermentação Térmica (Lógica por Frio Absoluto), Estoque Inteligente e Tarefas Alternadas
  * Preparado para Integração: Supabase
  */
 
@@ -17,8 +17,8 @@ const DashboardPani = () => {
   
   const [calcParams, setCalcParams] = useState({
     volume: 1,
-    tempAgora: 26,      
-    tempSaida: 17,      
+    tempAgora: 8,      
+    tempSaida: 1,      
     horarioSaida: '05:40'
   });
 
@@ -48,34 +48,46 @@ const DashboardPani = () => {
   // 2. LÓGICA DE NEGÓCIO ESPECIALIZADA
   // =======================================================================
   
-  // CÁLCULO DO PÃO (+5% DE FERMENTO)
+  // CÁLCULO DO PÃO (Baseado no frio absoluto + 5% final)
   const executarCalculo = () => {
     const vol = parseFloat(calcParams.volume);
     const tSaida = parseInt(calcParams.tempSaida);
     let gramasBase = 0;
     let notaTecnica = "";
 
-    if (tSaida <= 13) {
-      gramasBase = vol === 1 ? 150 : 80;
-      notaTecnica = "AQUECER ÁGUA: Madrugada fria.";
-    } else if (tSaida > 13 && tSaida <= 16) {
+    // NOVA LÓGICA: Focada estritamente no quão frio estará na hora do cozimento
+    if (tSaida <= 4) {
+      // FRIO EXTREMO (Ex: 1°C). Meio carrinho base 114g -> com +5% fica 120g redondos
+      gramasBase = vol === 1 ? 228 : 114;
+      notaTecnica = "FRIO EXTREMO / GEADA: Carga máxima de fermento. Aquecer a água se possível.";
+    } else if (tSaida >= 5 && tSaida <= 10) {
+      // MUITO FRIO
+      gramasBase = vol === 1 ? 180 : 90;
+      notaTecnica = "MUITO FRIO: Madrugada gelada. Dosagem alta necessária.";
+    } else if (tSaida >= 11 && tSaida <= 14) {
+      // FRIO MODERADO
+      gramasBase = vol === 1 ? 140 : 70;
+      notaTecnica = "FRIO MODERADO: Fermentação mais lenta.";
+    } else if (tSaida >= 15 && tSaida <= 19) {
+      // CLIMA PADRÃO CURITIBA
       gramasBase = vol === 1 ? 100 : 50;
-      notaTecnica = "CLIMA ESTÁVEL: Tempo padrão.";
-    } else if (tSaida >= 17) {
+      notaTecnica = "CLIMA PADRÃO: Tempo normal de crescimento.";
+    } else if (tSaida >= 20 && tSaida <= 24) {
+      // QUENTE
       gramasBase = vol === 1 ? 80 : 40;
-      notaTecnica = "CUIDADO CALOR: Risco de passar do ponto.";
-    }
-    
-    if (tSaida > 25) {
-      gramasBase -= (vol === 1 ? 10 : 5);
-      notaTecnica = "ALERTA TÉRMICO: Reduzido por segurança.";
+      notaTecnica = "CLIMA QUENTE: Reduzir para não passar do ponto.";
+    } else {
+      // CALOR EXTREMO (Acima de 24)
+      gramasBase = vol === 1 ? 60 : 30;
+      notaTecnica = "CALOR EXTREMO: Dosagem de segurança (mínima).";
     }
 
+    // Penalidade por Horário (Pães para muito tarde ficam muito tempo crescendo)
     const [h, m] = calcParams.horarioSaida.split(':').map(Number);
     const minSaida = h * 60 + m;
-    if (minSaida > 360) { // 06:00
+    if (minSaida > 360) { // Depois das 06:00
       gramasBase -= (vol === 1 ? 15 : 7);
-      notaTecnica += " (Horário tardio)";
+      notaTecnica += " (Reduzido levemente devido ao horário tardio da fornada)";
     }
 
     // APLICANDO A REGRA DOS +5% PEDIDA PELO RODRIGO
@@ -177,10 +189,14 @@ const DashboardPani = () => {
             <label style={estilos.label}>TEMP. AGORA (°C)</label>
             <input type="number" style={estilos.input} value={calcParams.tempAgora} onChange={(e) => setCalcParams({...calcParams, tempAgora: e.target.value})} />
           </div>
-          <div style={{ ...estilos.grupoInput, backgroundColor: '#fdf2f2', padding: '10px', borderRadius: '10px', border: '1px solid #000' }}>
-            <label style={{ ...estilos.label, color: '#b91c1c' }}>TEMP. SAÍDA (°C)</label>
+          <div style={{ ...estilos.grupoInput, backgroundColor: '#e0f2fe', padding: '10px', borderRadius: '10px', border: '1px solid #000' }}>
+            <label style={{ ...estilos.label, color: '#0369a1' }}>TEMP. SAÍDA (°C)</label>
             <input type="number" style={estilos.input} value={calcParams.tempSaida} onChange={(e) => setCalcParams({...calcParams, tempSaida: e.target.value})} />
           </div>
+        </div>
+        <div style={estilos.grupoInput}>
+          <label style={estilos.label}>HORÁRIO PREVISTO P/ ASSAR</label>
+          <input type="time" style={estilos.input} value={calcParams.horarioSaida} onChange={(e) => setCalcParams({...calcParams, horarioSaida: e.target.value})} />
         </div>
         <button onClick={executarCalculo} style={estilos.botaoPrimario}>GERAR PRESCRIÇÃO</button>
         {resultadoCalculo && (
