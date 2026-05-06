@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { calcularParametrosEmpresariais } from './calculo';
+import React, { useState } from 'react';
+
 const DashboardEmpresarial = () => {
   // =======================================================================
   // 1. ESTADO GLOBAL (Simulando o Banco de Dados - Supabase)
@@ -91,21 +91,17 @@ const DashboardEmpresarial = () => {
 
   // ABA 1: OPERAÇÃO (Chão de Fábrica)
   const renderOperacao = () => (
-    
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 animate-fade-in">
       <h2 className="text-lg font-bold mb-4 border-b pb-2 flex justify-between items-center">
         <span>PARÂMETROS DE BATIDA</span>
         {resultadoCalculo && <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Último: {resultadoCalculo.timestamp}</span>}
       </h2>
-      <div style={{ backgroundColor: 'red', minHeight: '100vh' }}>
-  {/* Conteúdo do seu sistema */}
-</div>
       
       <div className="space-y-6">
         <div>
           <label className="text-xs font-bold uppercase text-slate-500">Volume de Carga (Carrinho)</label>
           <select 
-            className="w-full mt-1 p-3 bg-slate-100 rounded-lg border-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 p-3 bg-slate-100 rounded-lg border-none focus:ring-2 focus:ring-blue-500 outline-none"
             value={calcParams.volume}
             onChange={(e) => setCalcParams({...calcParams, volume: e.target.value})}
           >
@@ -120,7 +116,7 @@ const DashboardEmpresarial = () => {
             <label className="text-xs font-bold uppercase text-slate-500">Temp. Ambiente (°C)</label>
             <input 
               type="number" 
-              className="w-full mt-1 p-3 bg-slate-100 rounded-lg"
+              className="w-full mt-1 p-3 bg-slate-100 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
               value={calcParams.tempAmbiente}
               onChange={(e) => setCalcParams({...calcParams, tempAmbiente: e.target.value})}
             />
@@ -129,7 +125,7 @@ const DashboardEmpresarial = () => {
             <label className="text-xs font-bold uppercase text-slate-500">Horário Alvo (Saída)</label>
             <input 
               type="time" 
-              className="w-full mt-1 p-3 bg-slate-100 rounded-lg"
+              className="w-full mt-1 p-3 bg-slate-100 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
               value={calcParams.horarioSaida}
               onChange={(e) => setCalcParams({...calcParams, horarioSaida: e.target.value})}
             />
@@ -196,13 +192,13 @@ const DashboardEmpresarial = () => {
             ) : (
               // MODO EDIÇÃO
               <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-2 items-center">
-                <input className="p-2 border rounded col-span-2" value={item.nome} onChange={(e) => handleInsumoChange(item.id, 'nome', e.target.value)} placeholder="Nome do Insumo" />
-                <input className="p-2 border rounded w-full" type="number" value={item.qtd} onChange={(e) => handleInsumoChange(item.id, 'qtd', e.target.value)} placeholder="Qtd" />
-                <select className="p-2 border rounded" value={item.status} onChange={(e) => handleInsumoChange(item.id, 'status', e.target.value)}>
+                <input className="p-2 border rounded col-span-2 outline-none focus:border-blue-500" value={item.nome} onChange={(e) => handleInsumoChange(item.id, 'nome', e.target.value)} placeholder="Nome do Insumo" />
+                <input className="p-2 border rounded w-full outline-none focus:border-blue-500" type="number" value={item.qtd} onChange={(e) => handleInsumoChange(item.id, 'qtd', e.target.value)} placeholder="Qtd" />
+                <select className="p-2 border rounded outline-none focus:border-blue-500" value={item.status} onChange={(e) => handleInsumoChange(item.id, 'status', e.target.value)}>
                   <option value="ok">Estoque OK</option>
                   <option value="critico">Crítico</option>
                 </select>
-                <button onClick={() => removerInsumo(item.id)} className="bg-red-500 text-white p-2 rounded font-bold">EXCLUIR</button>
+                <button onClick={() => removerInsumo(item.id)} className="bg-red-500 hover:bg-red-600 text-white p-2 rounded font-bold transition-colors">EXCLUIR</button>
               </div>
             )}
           </div>
@@ -210,7 +206,7 @@ const DashboardEmpresarial = () => {
       </div>
       
       {editMode && (
-        <button onClick={adicionarInsumo} className="mt-4 w-full bg-slate-800 text-white py-3 rounded-lg font-bold hover:bg-slate-700">
+        <button onClick={adicionarInsumo} className="mt-4 w-full bg-slate-800 text-white py-3 rounded-lg font-bold hover:bg-slate-700 transition-colors">
           + ADICIONAR NOVO INSUMO
         </button>
       )}
@@ -239,12 +235,12 @@ const DashboardEmpresarial = () => {
                 <div className="flex items-center gap-4">
                   <input 
                     type="checkbox" 
-                    className="w-6 h-6 accent-blue-600"
+                    className="w-6 h-6 accent-blue-600 cursor-pointer"
                     checked={tarefa.concluida}
                     onChange={(e) => handleTarefaChange(tarefa.id, 'concluida', e.target.checked)}
                   />
                   <div>
-                    <p className={`font-bold ${tarefa.concluida ? 'line-through text-slate-400' : 'text-slate-800'}`}>
+                    <p className={`font-bold transition-all ${tarefa.concluida ? 'line-through text-slate-400' : 'text-slate-800'}`}>
                       {tarefa.descricao}
                     </p>
                     <p className="text-xs text-slate-500 uppercase">Resp: {tarefa.responsavel} | Freq: {tarefa.frequencia}</p>
@@ -254,13 +250,13 @@ const DashboardEmpresarial = () => {
             ) : (
               // MODO EDIÇÃO
               <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
-                <input className="p-2 border rounded col-span-2" value={tarefa.descricao} onChange={(e) => handleTarefaChange(tarefa.id, 'descricao', e.target.value)} placeholder="Descrição da Tarefa" />
-                <select className="p-2 border rounded" value={tarefa.frequencia} onChange={(e) => handleTarefaChange(tarefa.id, 'frequencia', e.target.value)}>
+                <input className="p-2 border rounded col-span-2 outline-none focus:border-blue-500" value={tarefa.descricao} onChange={(e) => handleTarefaChange(tarefa.id, 'descricao', e.target.value)} placeholder="Descrição da Tarefa" />
+                <select className="p-2 border rounded outline-none focus:border-blue-500" value={tarefa.frequencia} onChange={(e) => handleTarefaChange(tarefa.id, 'frequencia', e.target.value)}>
                   <option value="diaria">Diária</option>
                   <option value="dia_sim_nao">Dia Sim / Dia Não</option>
                   <option value="semanal">Semanal</option>
                 </select>
-                <button onClick={() => removerTarefa(tarefa.id)} className="bg-red-500 text-white p-2 rounded font-bold">EXCLUIR</button>
+                <button onClick={() => removerTarefa(tarefa.id)} className="bg-red-500 hover:bg-red-600 text-white p-2 rounded font-bold transition-colors">EXCLUIR</button>
               </div>
             )}
           </div>
@@ -268,7 +264,7 @@ const DashboardEmpresarial = () => {
       </div>
 
       {editMode && (
-        <button onClick={adicionarTarefa} className="mt-4 w-full bg-slate-800 text-white py-3 rounded-lg font-bold hover:bg-slate-700">
+        <button onClick={adicionarTarefa} className="mt-4 w-full bg-slate-800 text-white py-3 rounded-lg font-bold hover:bg-slate-700 transition-colors">
           + ADICIONAR NOVA TAREFA
         </button>
       )}
@@ -283,7 +279,7 @@ const DashboardEmpresarial = () => {
       {/* Header Corporativo */}
       <header className="bg-slate-900 text-white p-4 flex flex-col md:flex-row justify-between items-center shadow-lg border-b-4 border-blue-500">
         <div className="flex items-center gap-3 mb-2 md:mb-0">
-          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-black text-xl">PD</div>
+          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-black text-xl shadow-inner">PD</div>
           <div>
             <h1 className="text-xl font-bold tracking-tight">SISTEMA ERP PANIDASH</h1>
             <p className="text-xs text-blue-400 font-mono tracking-widest">V2.0.0 - MÓDULO INDUSTRIAL</p>
