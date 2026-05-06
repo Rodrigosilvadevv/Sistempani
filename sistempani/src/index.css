@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+/* Isso avisa ao Tailwind 4 onde procurar suas classes */
+@source "../index.html";
+@source "./**/*.{js,ts,jsx,tsx}";
+
+/* Teste de emergência: se o fundo não ficar escuro, o CSS não carregou */
+body {
+  background-color: #0f172a;
+  color: white;
+}
