@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 
-const DashboardEmpresarial = () => {
+const DashboardPani = () => {
   // =======================================================================
-  // 1. ESTADO GLOBAL
+  // 1. ESTADO E NAVEGAÇÃO
   // =======================================================================
-  const [activeTab, setActiveTab] = useState('operacao');
-  const [editMode, setEditMode] = useState(false);
+  const [telaAtiva, setTelaAtiva] = useState('menu'); // menu, bater_pao, estoque, tarefas
 
   const [calcParams, setCalcParams] = useState({
     volume: 1,
@@ -28,7 +27,7 @@ const DashboardEmpresarial = () => {
   ]);
 
   // =======================================================================
-  // 2. LÓGICA DE NEGÓCIO
+  // 2. SUA LÓGICA DE NEGÓCIO (PRESERVADA)
   // =======================================================================
   const executarCalculo = () => {
     const K_FERMENTO = 500;
@@ -52,31 +51,51 @@ const DashboardEmpresarial = () => {
   };
 
   // =======================================================================
-  // 3. FUNÇÕES DE CRUD
-  // =======================================================================
-  const handleInsumoChange = (id, campo, valor) => {
-    setInsumos(insumos.map(i => i.id === id ? { ...i, [campo]: valor } : i));
-  };
-
-  const handleTarefaChange = (id, campo, valor) => {
-    setTarefas(tarefas.map(t => t.id === id ? { ...t, [campo]: valor } : t));
-  };
-
-  // =======================================================================
-  // 4. SUB-COMPONENTES (COM GRID FORÇADO)
+  // 3. COMPONENTES DE TELA
   // =======================================================================
 
-  const renderOperacao = () => (
-    <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-      <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '20px', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
-        PARÂMETROS DE BATIDA
-      </h2>
+  const BotaoVoltar = () => (
+    <button 
+      onClick={() => setTelaAtiva('menu')}
+      style={{ backgroundColor: '#e2e8f0', border: '2px solid #000', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginBottom: '20px', color: '#000' }}
+    >
+      ← VOLTAR AO MENU
+    </button>
+  );
+
+  // MENU PRINCIPAL (GRID)
+  const RenderMenu = () => (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', padding: '20px' }}>
+      <div onClick={() => setTelaAtiva('bater_pao')} style={estiloCardMenu}>
+        <span style={{ fontSize: '45px' }}>🥖</span>
+        <span style={estiloTextoMenu}>BATER PÃO</span>
+      </div>
+      <div onClick={() => setTelaAtiva('tarefas')} style={estiloCardMenu}>
+        <span style={{ fontSize: '45px' }}>📋</span>
+        <span style={estiloTextoMenu}>TAREFAS</span>
+      </div>
+      <div onClick={() => setTelaAtiva('estoque')} style={estiloCardMenu}>
+        <span style={{ fontSize: '45px' }}>📦</span>
+        <span style={estiloTextoMenu}>ESTOQUE</span>
+      </div>
+      <div style={{ ...estiloCardMenu, opacity: 0.4, cursor: 'not-allowed' }}>
+        <span style={{ fontSize: '45px' }}>📊</span>
+        <span style={estiloTextoMenu}>RELATÓRIOS</span>
+      </div>
+    </div>
+  );
+
+  // TELA OPERAÇÃO (BATER PÃO)
+  const RenderBaterPao = () => (
+    <div style={{ padding: '20px', color: '#000' }}>
+      <BotaoVoltar />
+      <h2 style={{ borderBottom: '3px solid #000', paddingBottom: '10px', fontWeight: '900' }}>BATER PÃO</h2>
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
         <div>
-          <label style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b' }}>VOLUME DE CARGA</label>
+          <label style={estiloLabel}>VOLUME DE CARGA</label>
           <select 
-            style={{ width: '100%', padding: '12px', marginTop: '5px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+            style={estiloInput}
             value={calcParams.volume}
             onChange={(e) => setCalcParams({...calcParams, volume: e.target.value})}
           >
@@ -86,133 +105,92 @@ const DashboardEmpresarial = () => {
           </select>
         </div>
 
-        {/* GRADE DE INPUTS (2 COLUNAS) */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b' }}>TEMP. AMBIENTE (°C)</label>
-            <input 
-              type="number" 
-              style={{ width: '100%', padding: '12px', marginTop: '5px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
-              value={calcParams.tempAmbiente}
-              onChange={(e) => setCalcParams({...calcParams, tempAmbiente: e.target.value})}
-            />
+            <label style={estiloLabel}>TEMP. AMBIENTE (°C)</label>
+            <input type="number" style={estiloInput} value={calcParams.tempAmbiente} onChange={(e) => setCalcParams({...calcParams, tempAmbiente: e.target.value})} />
           </div>
           <div>
-            <label style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b' }}>HORÁRIO SAÍDA</label>
-            <input 
-              type="time" 
-              style={{ width: '100%', padding: '12px', marginTop: '5px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
-              value={calcParams.horarioSaida}
-              onChange={(e) => setCalcParams({...calcParams, horarioSaida: e.target.value})}
-            />
+            <label style={estiloLabel}>HORÁRIO SAÍDA</label>
+            <input type="time" style={estiloInput} value={calcParams.horarioSaida} onChange={(e) => setCalcParams({...calcParams, horarioSaida: e.target.value})} />
           </div>
         </div>
 
-        <button 
-          style={{ width: '100%', backgroundColor: '#2563eb', color: 'white', fontWeight: 'bold', padding: '15px', borderRadius: '12px', border: 'none', cursor: 'pointer' }}
-          onClick={executarCalculo}
-        >
-          EXECUTAR CÁLCULO PREDITIVO
-        </button>
+        <button onClick={executarCalculo} style={estiloBotaoAcao}>EXECUTAR CÁLCULO PREDITIVO</button>
 
         {resultadoCalculo && (
-          <div style={{ marginTop: '20px', padding: '20px', backgroundColor: '#1e293b', color: 'white', borderRadius: '12px', borderLeft: '5px solid #3b82f6' }}>
-            <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '5px' }}>PRESCRIÇÃO:</p>
+          <div style={{ marginTop: '20px', padding: '20px', backgroundColor: '#000', color: '#fff', borderRadius: '12px', borderLeft: '10px solid #2563eb' }}>
+            <p style={{ fontSize: '12px', color: '#60a5fa', fontWeight: 'bold' }}>RESULTADO:</p>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-              <span style={{ fontSize: '40px', fontWeight: '900', color: '#60a5fa' }}>{resultadoCalculo.gramas}</span>
-              <span style={{ fontSize: '18px' }}>gramas de fermento</span>
+              <span style={{ fontSize: '48px', fontWeight: '900', color: '#fff' }}>{resultadoCalculo.gramas}g</span>
             </div>
+            <p style={{ margin: '10px 0 0 0', fontSize: '14px', fontWeight: 'bold', color: resultadoCalculo.alerta.includes('ALERTA') ? '#ff4d4d' : '#4ade80' }}>
+              {resultadoCalculo.alerta}
+            </p>
           </div>
         )}
       </div>
     </div>
   );
 
-  const renderEstoque = () => (
-    <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-      <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '20px' }}>CONTROLE DE INSUMOS</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+  // TELA ESTOQUE
+  const RenderEstoque = () => (
+    <div style={{ padding: '20px', color: '#000' }}>
+      <BotaoVoltar />
+      <h2 style={{ borderBottom: '3px solid #000', paddingBottom: '10px', fontWeight: '900' }}>ESTOQUE</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
         {insumos.map(item => (
-          <div key={item.id} style={{ padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: item.status === 'critico' ? '#fff1f2' : '#f8fafc' }}>
-            <div>
-              <div style={{ fontWeight: 'bold' }}>{item.nome}</div>
-              <div style={{ fontSize: '12px', color: '#64748b' }}>Validade: {item.validade}</div>
-            </div>
-            <div style={{ textAlign: 'right', fontWeight: '900', color: item.status === 'critico' ? '#e11d48' : '#1e293b' }}>
-              {item.qtd} {item.unidade}
-            </div>
+          <div key={item.id} style={{ padding: '15px', borderRadius: '8px', border: '2px solid #000', display: 'flex', justifyContent: 'space-between', backgroundColor: item.status === 'critico' ? '#fee2e2' : '#fff' }}>
+            <div style={{ fontWeight: 'bold' }}>{item.nome}</div>
+            <div style={{ fontWeight: '900' }}>{item.qtd} {item.unidade}</div>
           </div>
         ))}
       </div>
     </div>
   );
 
-  // =======================================================================
-  // RENDER PRINCIPAL
-  // =======================================================================
-  return (
-    <div style={{ backgroundColor: '#f1f5f9', minHeight: '100vh', fontFamily: 'sans-serif' }}>
-      {/* HEADER */}
-      <header style={{ backgroundColor: '#0f172a', color: 'white', padding: '20px', borderBottom: '4px solid #2563eb' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h1 style={{ margin: 0, fontSize: '20px' }}>PANIDASH ERP</h1>
-            <p style={{ margin: 0, fontSize: '10px', color: '#60a5fa' }}>MÓDULO INDUSTRIAL V2.0</p>
-          </div>
-          <div style={{ fontSize: '12px', textAlign: 'right' }}>
-            <strong>ADMIN (ADS)</strong><br/>
-            <span style={{ color: '#94a3b8' }}>{new Date().toLocaleDateString()}</span>
-          </div>
+  // TELA TAREFAS
+  const RenderTarefas = () => (
+    <div style={{ padding: '20px', color: '#000' }}>
+      <BotaoVoltar />
+      <h2 style={{ borderBottom: '3px solid #000', paddingBottom: '10px', fontWeight: '900' }}>TAREFAS</h2>
+      {tarefas.map(t => (
+        <div key={t.id} style={{ display: 'flex', gap: '15px', padding: '15px 0', borderBottom: '2px solid #eee', alignItems: 'center' }}>
+          <input type="checkbox" style={{ width: '25px', height: '25px', cursor: 'pointer' }} />
+          <div style={{ color: '#000', fontWeight: 'bold' }}>{t.descricao} <span style={{ fontSize: '10px', color: '#666', display: 'block' }}>RESP: {t.responsavel}</span></div>
         </div>
+      ))}
+    </div>
+  );
+
+  // =======================================================================
+  // 4. ESTILOS OBJETIVOS (ALTO CONTRASTE)
+  // =======================================================================
+  const estiloCardMenu = {
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#fff', border: '3px solid #000', borderRadius: '20px', padding: '30px 10px',
+    cursor: 'pointer', boxShadow: '6px 6px 0px #000', transition: '0.2s'
+  };
+
+  const estiloTextoMenu = { color: '#000', fontWeight: '900', fontSize: '16px', marginTop: '10px', textAlign: 'center' };
+  const estiloLabel = { fontSize: '12px', fontWeight: '900', color: '#000', textTransform: 'uppercase' };
+  const estiloInput = { width: '100%', padding: '15px', marginTop: '5px', borderRadius: '8px', border: '2px solid #000', fontSize: '16px', fontWeight: 'bold', color: '#000', backgroundColor: '#fff' };
+  const estiloBotaoAcao = { width: '100%', backgroundColor: '#000', color: '#fff', fontWeight: '900', padding: '20px', borderRadius: '12px', border: 'none', cursor: 'pointer', marginTop: '10px', fontSize: '16px' };
+
+  return (
+    <div style={{ backgroundColor: '#fff', minHeight: '100vh', fontFamily: 'system-ui, sans-serif' }}>
+      <header style={{ backgroundColor: '#000', color: '#fff', padding: '15px', textAlign: 'center' }}>
+        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '900', letterSpacing: '1px' }}>PANIDASH</h1>
       </header>
 
-      {/* NAVEGAÇÃO POR ABAS */}
-      <nav style={{ backgroundColor: 'white', borderBottom: '1px solid #e2e8f0', marginBottom: '20px' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex' }}>
-          {['operacao', 'estoque', 'tarefas'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              style={{
-                flex: 1,
-                padding: '15px',
-                border: 'none',
-                backgroundColor: 'transparent',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                color: activeTab === tab ? '#2563eb' : '#64748b',
-                borderBottom: activeTab === tab ? '4px solid #2563eb' : '4px solid transparent',
-                textTransform: 'uppercase',
-                fontSize: '12px'
-              }}
-            >
-              {tab === 'operacao' ? 'Operação' : tab === 'estoque' ? 'Estoque' : 'Agenda'}
-            </button>
-          ))}
-        </div>
-      </nav>
-
-      {/* CONTEÚDO */}
-      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '0 15px' }}>
-        {activeTab === 'operacao' && renderOperacao()}
-        {activeTab === 'estoque' && renderEstoque()}
-        {activeTab === 'tarefas' && (
-          <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '20px' }}>AGENDA DE PROCESSOS</h2>
-            {tarefas.map(t => (
-              <div key={t.id} style={{ display: 'flex', gap: '15px', padding: '12px 0', borderBottom: '1px solid #f1f5f9' }}>
-                <input type="checkbox" checked={t.concluida} onChange={() => {}} style={{ width: '20px', height: '20px' }} />
-                <div>
-                  <div style={{ fontWeight: 'bold' }}>{t.descricao}</div>
-                  <div style={{ fontSize: '11px', color: '#64748b' }}>RESP: {t.responsavel}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+      <main style={{ maxWidth: '600px', margin: '0 auto' }}>
+        {telaAtiva === 'menu' && <RenderMenu />}
+        {telaAtiva === 'bater_pao' && <RenderBaterPao />}
+        {telaAtiva === 'estoque' && <RenderEstoque />}
+        {telaAtiva === 'tarefas' && <RenderTarefas />}
       </main>
     </div>
   );
 };
 
-export default DashboardEmpresarial;
+export default DashboardPani;
